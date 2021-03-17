@@ -13,6 +13,9 @@ resource "aws_db_instance" "default" {
   multi_az                   = false
   skip_final_snapshot        = true
 
+  tags = {
+    environment-name = "invoicer-api"
+  }
 }
 
 resource "aws_elastic_beanstalk_application" "invoicer_eb_app" {

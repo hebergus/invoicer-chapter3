@@ -44,3 +44,8 @@ module "invoicer_db" {
   security_groups  = [aws_security_group.invoicer_db.id]
   db_app           = "invoicerdb"
 }
+
+module "deployer" {
+  source = "./modules/deployer"
+
+}
