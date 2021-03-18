@@ -7,6 +7,9 @@
 terraform/*.tfstate
 terraform/*.tfstate.*
 
+# Sensitive Files
+terraform/modules/deployer/main.tf
+
 # Lock files
 terraform/.terraform.lock.hcl
 
