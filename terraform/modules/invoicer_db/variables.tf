@@ -7,6 +7,9 @@ variable "subnets" {
 variable "security_groups" {
   type = list(string)
 }
+variable "invoicer_vpc" {
+  type = string
+}
 variable "db_app" {
   type = string
 }

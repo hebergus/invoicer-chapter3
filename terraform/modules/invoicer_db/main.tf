@@ -1,7 +1,7 @@
 resource "aws_db_instance" "default" {
   name                       = "invoicer"
   identifier                 = var.db_app
-  vpc_security_group_ids     = var.security_groups
+  vpc_security_group_ids     = [element(var.security_groups, 2)]
   allocated_storage          = 5
   instance_class             = var.db_instance_type
   engine                     = "postgres"
@@ -64,6 +64,42 @@ resource "aws_elastic_beanstalk_environment" "invoicer_eb_env" {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "IamInstanceProfile"
     value     = "aws-elasticbeanstalk-ec2-role"
+  }
+
+  setting {
+    namespace = "aws:autoscaling:launchconfiguration"
+    name      = "SecurityGroups"
+    value     = var.security_groups[1]
+  }
+
+  setting {
+    namespace = "aws:elb:loadbalancer"
+    name      = "SecurityGroups"
+    value     = var.security_groups[0]
+  }
+
+  setting {
+    namespace = "aws:elb:loadbalancer"
+    name      = "ManagedSecurityGroup"
+    value     = var.security_groups[0]
+  }
+
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "VPCId"
+    value     = var.invoicer_vpc
+  }
+
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "Subnets"
+    value     = "subnet-7a7bc336"
+  }
+
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "ELBSubnets"
+    value     = "subnet-7a7bc336"
   }
 
 }

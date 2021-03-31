@@ -29,3 +29,15 @@ output "deployer_env_id" {
 output "deployer_app_version" {
   value = module.deployer.app_version
 }
+
+output "security_group_db" {
+  value = aws_security_group.invoicer_db.id
+}
+
+output "security_group_ec" {
+  value = aws_security_group.invoicer_ec.id
+}
+
+output "security_group_lb" {
+  value = aws_security_group.invoicer_lb.id
+}
