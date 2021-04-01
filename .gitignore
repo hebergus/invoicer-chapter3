@@ -9,6 +9,7 @@ terraform/*.tfstate.*
 
 # Sensitive Files
 terraform/modules/deployer/main.tf
+terraform/modules/bastion/mykey_ecdsa.pub
 
 # Lock files
 terraform/.terraform.lock.hcl
