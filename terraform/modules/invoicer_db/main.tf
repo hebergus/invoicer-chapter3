@@ -93,13 +93,13 @@ resource "aws_elastic_beanstalk_environment" "invoicer_eb_env" {
   setting {
     namespace = "aws:ec2:vpc"
     name      = "Subnets"
-    value     = "subnet-7a7bc336"
+    value     = "subnet-36e78d4c"
   }
 
   setting {
     namespace = "aws:ec2:vpc"
     name      = "ELBSubnets"
-    value     = "subnet-7a7bc336"
+    value     = "subnet-36e78d4c, subnet-7a7bc336, subnet-bc96b8d5"
   }
 
 }

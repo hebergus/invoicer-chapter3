@@ -23,12 +23,25 @@ resource "aws_security_group" "invoicer_lb" {
   name        = "invoicer_lb"
   description = "Invoicer EB compute security group"
 
-
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = var.whitelist
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = var.whitelist
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -49,6 +62,13 @@ resource "aws_security_group" "invoicer_ec" {
     cidr_blocks     = var.whitelist
   }
 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = {
     "Terraform" : "true"
   }
@@ -64,6 +84,13 @@ resource "aws_security_group" "invoicer_db" {
     to_port         = 5432
     protocol        = "tcp"
     security_groups = [aws_security_group.invoicer_ec.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
