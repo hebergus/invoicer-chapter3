@@ -1,0 +1,71 @@
+#Setup
+
+#Step1:  Install EPEL Repo on the EC2 instance
+#sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+#Step2:  Install Google Authenticator on the EC2 instance
+#sudo yum install google-authenticator.x86_64 -y
+
+#Step3: Edit /etc/pam.d/sshd so to only enable cert auth and use the google auth module
+#sudo sed -e '/auth       substack     password-auth/ s/^#*/#/' -i /etc/pam.d/sshd
+#sudo echo 'auth required pam_google_authenticator.so nullok' >> /etc/pam.d/sshd
+
+#Step3b: Update the sshd configuration 
+#sudo sed -e '/ChallengeResponseAuthentication no/ s/^#*/#/' -i /etc/ssh/sshd_config
+#sudo sed -i 's/^#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
+#sudo echo 'AuthenticationMethods publickey,keyboard-interactive' >> /etc/ssh/sshd_config
+
+- become: yes
+  become_user: root
+  hosts: all
+  name: google-authenticator-install
+  tasks:
+    - name: Install EPEL Repo on the EC2 instance [OK]
+      ansible.builtin.command: amazon-linux-extras install epel -y
+      register: task1
+    - debug: msg="{{ task1.stdout }}"
+    - debug: msg="{{ task1.stderr }}"
+
+    - name: Install Google Authenticator on the EC2 instance [OK]
+      yum: name=google-authenticator.x86_64 update_cache=yes state=latest
+
+    - name: Enable certificate authentication only [OK]
+      lineinfile:
+        path: /etc/pam.d/sshd
+        regexp: ^(auth       substack     password-auth)$
+        line: "#\\1"
+        backrefs: yes
+
+    - name: Enable the google authentication module [OK]
+      blockinfile:
+        path: /etc/pam.d/sshd
+        block: |
+          auth required pam_google_authenticator.so nullok
+
+    - name: Update the sshd configuration (1/2) [OK]
+      ansible.builtin.command: sed -e '/ChallengeResponseAuthentication no/ s/^#*/#/' -i /etc/ssh/sshd_config
+
+    - name: Update the sshd configuration (2/2) [OK]
+      ansible.builtin.command: sed -i 's/^#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
+      
+    - name: Configure the sshd authentication methods 
+      blockinfile:
+        path: /etc/ssh/sshd_config
+        block: |
+          AuthenticationMethods publickey,keyboard-interactive
+        validate: sshd -t -f %s
+
+    - name: Subscribe default user
+      become: no
+      ansible.builtin.command: google-authenticator -t -f -d -W -r 3 -R 30
+      register: task6
+      become: yes
+      become_user: root
+      notify:
+        - restart sshd
+    - debug: msg="{{ task6.stdout }}"
+    - debug: msg="{{ task6.stderr }}"
+
+  handlers:
+    - name: restart sshd
+      service: name=sshd state=restarted

@@ -1,21 +1,3 @@
-/*
-variable "subnets" {
-  type = list(string)
-}
-variable "security_groups" {
-  type = list(string)
-}
-
-variable "web_image_id" {
+variable "deployer_vpc" {
   type = string
 }
-variable "web_desired_capacity" {
-  type = number
-}
-variable "web_max_size" {
-  type = number
-}
-variable "web_min_size" {
-  type = number
-}
-*/

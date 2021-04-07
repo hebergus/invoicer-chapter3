@@ -41,3 +41,9 @@ output "security_group_ec" {
 output "security_group_lb" {
   value = aws_security_group.invoicer_lb.id
 }
+output "bastion_public_dns" {
+  value = module.bastion.public_dns
+}
+output "bastion_public_ip" {
+  value = module.bastion.public_ip
+}

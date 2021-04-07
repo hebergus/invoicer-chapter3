@@ -98,6 +98,30 @@ resource "aws_security_group" "invoicer_db" {
   }
 }
 
+resource "aws_security_group" "bastion-sg" {
+  name        = "bastion-sg"
+  description = "bastion security group"
+
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.whitelist
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    "Terraform" : "true"
+  }
+}
+
 module "invoicer_db" {
   source = "./modules/invoicer_db"
 
@@ -110,5 +134,15 @@ module "invoicer_db" {
 
 module "deployer" {
   source = "./modules/deployer"
+
+  deployer_vpc = aws_default_vpc.default.id
+
+}
+
+module "bastion" {
+  source = "./modules/bastion"
+
+  security_groups  = [aws_security_group.bastion-sg.id]
+  pvt_key_location = "~/mykey_ecdsa"
 
 }
