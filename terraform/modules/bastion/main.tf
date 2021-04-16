@@ -30,6 +30,7 @@ resource "aws_instance" "bastion" {
   tags = {
     Name = "bastion"
     "Terraform" : "true"
+    environment-name = "invoicer-bastion"
   }
 
   provisioner "local-exec" {

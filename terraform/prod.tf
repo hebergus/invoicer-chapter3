@@ -62,6 +62,13 @@ resource "aws_security_group" "invoicer_ec" {
     cidr_blocks     = var.whitelist
   }
 
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion-sg.id]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -83,7 +90,7 @@ resource "aws_security_group" "invoicer_db" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.invoicer_ec.id]
+    security_groups = [aws_security_group.invoicer_ec.id, aws_security_group.bastion-sg.id]
   }
 
   egress {
